@@ -53,6 +53,11 @@ const getCourses = async (courseUrl: string): Promise<IGrsCourseInfo[]> => {
   return courses
 }
 
+if (!config.cookie) {
+  console.error('请按照 README 提供 Cookie 用于请求数据')
+  process.exit()
+}
+
 Promise.all([
   getCourses(config.fall.sectionCourseUrl),
   getCourses(config.winter.sectionCourseUrl)
