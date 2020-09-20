@@ -2,17 +2,6 @@
 
 将浙江大学研究生课表转换为 ics 文件，进而导入到 Google 日历（或者其他日历）里面。
 
-## 查看我的课表
-
-- 2020 - 2021 学年秋：http://grs.zju.edu.cn/py/page/student/grkcb.htm?xj=13&xn=2020
-- 2020 - 2021 学年冬：http://grs.zju.edu.cn/py/page/student/grkcb.htm?xj=14&xn=2020
-
-## 浙大校历
-
-上课时间如下：
-
-![浙大上课时间](https://picgo-1256492673.cos.ap-chengdu.myqcloud.com/20200913084937.png)
-
 ## 使用说明
 
 ### 安装依赖
@@ -25,7 +14,7 @@ yarn
 
 ### 获取 grs 网站 Cookie
 
-前往课表页面，按 F12 打开 devtools 里面的 Network 标签页，刷新页面，然后找到第一个请求，复制 request header 里面的 Cookie 字段：
+前往[我的课程](http://grs.zju.edu.cn/py/page/student/grkcgl.htm)或者[我的课表](http://grs.zju.edu.cn/py/page/student/grkcb.htm)页面，在已经登陆的情况下，按 F12 打开 devtools 里面的 Network 标签页，刷新页面，然后找到第一个请求，复制 Request Headers 里面的 Cookie 字段：
 
 ![获取 grs 网站 Cookie](https://picgo-1256492673.cos.ap-chengdu.myqcloud.com/20200913091014.png)
 
@@ -60,9 +49,22 @@ yarn generate
 ## 注意事项
 
 - 如果想删除已经导入的课程，可以使用 [GCalToolkit](https://www.gcaltoolkit.com/) 批量删除，按照 Description 搜索 zju-grs-ics 即可过滤并删除所有已经导入的课程。
+- 如果生成的 `courses.ics` 文件内容为 `null`，说明 Cookie 已经过期，请更换你的 Cookie。另外 Cookie 请注意保密。
 
-## 相关链接
+## 相关资源
 
 1. [浙江大学2020-2021学年秋冬学期校历](http://www.cst.zju.edu.cn/_upload/article/files/d0/3e/5f26bbae4e1cb3bafdb72161901f/eaef074d-ecc6-4380-8da8-8c120a812072.pdf)
 2. [GCalToolkit - 用于 Google 日历的批量操作工具](https://www.gcaltoolkit.com/)
 3. [ICSviewer](https://marc.vos.net/downloads/icsviewer/)
+
+### 查看我的课表
+
+- 我的课程：http://grs.zju.edu.cn/py/page/student/grkcgl.htm
+- 2020 - 2021 学年秋：http://grs.zju.edu.cn/py/page/student/grkcb.htm?xj=13&xn=2020
+- 2020 - 2021 学年冬：http://grs.zju.edu.cn/py/page/student/grkcb.htm?xj=14&xn=2020
+
+### 浙大校历
+
+上课时间如下：
+
+![浙大上课时间](https://picgo-1256492673.cos.ap-chengdu.myqcloud.com/20200913084937.png)

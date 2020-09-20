@@ -1,12 +1,10 @@
-import { section2StartTime } from './helper'
+import { section2StartTime, zh2number } from './helper'
 
 export interface ISectionConfig {
   /** 第一周是一年中的第几周，用来计算课程的具体日期 */
   firstWeekOfYear: number
   /** 学期最后一天 */
   lastWeekDay: string
-  /** 学期课表链接 */
-  sectionCourseUrl: string
 }
 
 export interface IConfig {
@@ -24,6 +22,7 @@ export type SeasonKey = 'fall' | 'winter'
 export type SeasonValue = '秋' | '冬'
 
 export type SectionNo = keyof typeof section2StartTime
+export type ZhNumber = keyof typeof zh2number
 
 export interface IGrsCourseInfo {
   /** 课程名称 */
@@ -42,4 +41,6 @@ export interface IGrsCourseInfo {
   teacher: string
   /** 授课地点 */
   address: string
+  /** 备注 */
+  remarks: string
 }

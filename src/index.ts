@@ -6,9 +6,9 @@ import path from 'path'
 import axios from 'axios'
 import cheerio from 'cheerio'
 import { config } from './config'
-import { IGrsCourseInfo, SectionNo } from './types'
+import { IGrsCourseInfo, SectionNo, ZhNumber } from './types'
 import { minify } from 'html-minifier'
-import { course2Events, getElementIndexInParent } from './helper'
+import { course2Events, zh2number } from './helper'
 
 const outputDir = path.join(__dirname, '../output')
 const outputFile = path.resolve(outputDir, 'courses.ics')
@@ -30,25 +30,61 @@ const getCourses = async (courseUrl: string): Promise<IGrsCourseInfo[]> => {
 
   const $ = cheerio.load(html)
 
-  $('table.table-course > tbody > tr > td > a').map((idx, ele) => {
-    const seasonAndWeeksRange = ele.children[2].data!.split('||').map(s => s.trim())
-    const sectionRange = ele.children[4].data!.split('--').map(r => {
-      return r.trim().slice(1, -1)
-    })
+  const cheerioELe2Course = (idx: number, ele: CheerioElement): void => {
+    const tmpCourses = []
+    let remarks = ''
 
-    const grsCourseInfo: IGrsCourseInfo = {
-      title: ele.children[0].children[0].data!,
-      season: seasonAndWeeksRange[0] as IGrsCourseInfo['season'],
-      weeksRange: seasonAndWeeksRange[1] as IGrsCourseInfo['weeksRange'],
-      startSection: sectionRange[0] as SectionNo,
-      endSection: sectionRange[1] as SectionNo,
-      teacher: ele.children[6].data!.trim(),
-      address: ele.children[8].data!.trim(),
-      weekDay: getElementIndexInParent(ele.parent)
+    // ele 是一个 td
+    // console.log(ele)
+    const tr = ele.parent
+    // console.log(tr.children[2].children[0].children[0].data!, tr)
+    const courseInfoTd = tr.children[8]
+
+    // 每周只有一节课：0 - 9, 10 - 11
+    // 每周有两节课：0 - 9, 10 - 19, 20 - 21
+    for (let i = 0; ; i += 10) {
+      if (i + 2 >= courseInfoTd.children.length) {
+        // console.log('i', i)
+        remarks = courseInfoTd.children[i + 1]?.data || ''
+        break
+      }
+      // console.log('i', i)
+
+      // 例如「秋（每周）」
+      const periodText = courseInfoTd.children[i + 1].data!
+      const periodTextWeekRangeStartIndex = periodText.indexOf('(') + 1
+      const periodTextWeekRangeEndIndex = periodText.indexOf(')')
+
+      // 例如 6-8 节
+      const sectionText = courseInfoTd.children[i + 5].data!
+      const sectionRange = sectionText.match(/\d+/g)!
+
+      const grsCourseInfo: IGrsCourseInfo = {
+        title: tr.children[2].children[0].children[0].data!,
+        season: tr.children[6].children[0].data! as IGrsCourseInfo['season'],
+        weeksRange: periodText.substring(periodTextWeekRangeStartIndex, periodTextWeekRangeEndIndex) as IGrsCourseInfo['weeksRange'],
+        startSection: parseInt(sectionRange[0]) as SectionNo,
+        endSection: parseInt(sectionRange[1]) as SectionNo,
+        teacher: tr.children[7].children[0].data!,
+        address: courseInfoTd.children[i + 8].data!,
+        weekDay: zh2number[courseInfoTd.children[i + 3].data!.slice(2) as ZhNumber],
+        remarks
+      }
+
+      tmpCourses.push(grsCourseInfo)
     }
+    courses.push(...(tmpCourses.map(course => ({
+      ...course,
+      remarks
+    }))))
+  }
 
-    courses.push(grsCourseInfo)
-  })
+  // 已经选上课的
+  $('table.table-bordered-xk > tbody > tr > td[name="正在修读"]').map(cheerioELe2Course)
+  // 待处理，即等待院系审批
+  $('table.table-bordered-xk > tbody > tr > td[name="待处理"]').map(cheerioELe2Course)
+  // 还在等待列表的
+  $('table.table-bordered-xk > tbody > tr > td[name="等待列表"]').map(cheerioELe2Course)
 
   return courses
 }
@@ -59,16 +95,10 @@ if (!config.cookie) {
 }
 
 Promise.all([
-  getCourses(config.fall.sectionCourseUrl),
-  getCourses(config.winter.sectionCourseUrl)
+  getCourses('http://grs.zju.edu.cn/py/page/student/grkcgl.htm')
 ])
   .then(async (res) => {
-    const titles = new Set(res[0].map(c => c.title))
-
-    const courses = [
-      ...res[0],
-      ...res[1].filter(c => !titles.has(c.title))
-    ]
+    const courses = res[0]
     console.log('courses', courses)
 
     // 利用课程信息构造 ics 数据结构
@@ -93,6 +123,16 @@ Promise.all([
       })
     })
   })
-  .catch(err => {
+  .catch(async err => {
     console.log('课程获取失败', err)
   })
+
+// console.log('process.env.NODE_ENV', process.env.NODE_ENV)
+// 无限等待，防止 log 变量在 Chrome devtools 里面消失，方便调试
+if (process.env.NODE_ENV === 'development') {
+  new Promise((resolve) => {
+    setTimeout(() => {
+      resolve()
+    }, 10000000)
+  }).catch(() => {})
+}

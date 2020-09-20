@@ -3,38 +3,48 @@ import { IGrsCourseInfo, SeasonKey, SeasonValue } from './types'
 import dayjs from 'dayjs'
 import { config } from './config'
 
+export const zh2number = {
+  一: 1,
+  二: 2,
+  三: 3,
+  四: 4,
+  五: 5,
+  六: 6,
+  七: 7
+}
+
 export const section2StartTime = {
-  一: [8, 0],
-  二: [8, 50],
-  三: [9, 50],
-  四: [10, 40],
-  五: [11, 30],
-  六: [13, 15],
-  七: [14, 5],
-  八: [14, 55],
-  九: [15, 55],
-  十: [16, 45],
-  十一: [18, 30],
-  十二: [19, 20],
-  十三: [20, 10],
-  十四: [21, 0]
+  1: [8, 0],
+  2: [8, 50],
+  3: [9, 50],
+  4: [10, 40],
+  5: [11, 30],
+  6: [13, 15],
+  7: [14, 5],
+  8: [14, 55],
+  9: [15, 55],
+  10: [16, 45],
+  11: [18, 30],
+  12: [19, 20],
+  13: [20, 10],
+  14: [21, 0]
 }
 
 export const section2EndTime = {
-  一: [8, 45],
-  二: [9, 35],
-  三: [10, 35],
-  四: [11, 25],
-  五: [12, 15],
-  六: [14, 0],
-  七: [14, 50],
-  八: [15, 40],
-  九: [16, 40],
-  十: [17, 30],
-  十一: [19, 15],
-  十二: [20, 5],
-  十三: [20, 55],
-  十四: [21, 45]
+  1: [8, 45],
+  2: [9, 35],
+  3: [10, 35],
+  4: [11, 25],
+  5: [12, 15],
+  6: [14, 0],
+  7: [14, 50],
+  8: [15, 40],
+  9: [16, 40],
+  10: [17, 30],
+  11: [19, 15],
+  12: [20, 5],
+  13: [20, 55],
+  14: [21, 45]
 }
 
 /** 星期一作为一周的第一天，获取指定周的周一的 Date 对象 */
@@ -47,13 +57,6 @@ export const getDateOfISOWeek = (w: number, y: number): Date => {
   return ISOWeekStart
 }
 
-/** 子元素在父元素中的 index */
-export const getElementIndexInParent = (element: CheerioElement): number => {
-  let i = 0
-  while ((element = element.previousSibling) != null && element.attribs.rowspan !== '5') { i++ }
-  return i
-}
-
 export const seasonId2Text: { [key in SeasonKey]: SeasonValue } = {
   fall: '秋',
   winter: '冬'
@@ -62,14 +65,14 @@ export const seasonId2Text: { [key in SeasonKey]: SeasonValue } = {
 export const course2Events = (courses: IGrsCourseInfo[], seasonId: 'fall' | 'winter'): EventAttributes[] => {
   const events: EventAttributes[] = []
 
-  const fallLastWeekDay = dayjs(config[seasonId].lastWeekDay)
+  const seasonLastWeekDay = dayjs(config[seasonId].lastWeekDay)
   for (let weekNo = config[seasonId].firstWeekOfYear, i = 1; ; weekNo++, i++) {
     const isOdd = i % 2 === 1
 
     const weekMonday = dayjs(getDateOfISOWeek(weekNo, config.year))
 
     // 当前周已经超过学期最后一天，结束循环
-    if (fallLastWeekDay.isBefore(weekMonday)) break
+    if (seasonLastWeekDay.isBefore(weekMonday)) break
     for (const course of courses) {
       const date = weekMonday.add(course.weekDay - 1, 'day')
 
@@ -78,14 +81,14 @@ export const course2Events = (courses: IGrsCourseInfo[], seasonId: 'fall' | 'win
       // 3. 周数符合条件
       if (
         course.season.includes(seasonId2Text[seasonId]) &&
-        date.isBefore(fallLastWeekDay) &&
+        date.isBefore(seasonLastWeekDay) &&
         (course.weeksRange === '每周' || (course.weeksRange === '单周' && isOdd) || (course.weeksRange === '双周' && !isOdd))) {
         const event: EventAttributes = {
           title: course.title,
           start: [date.year(), date.month() + 1, date.date(), section2StartTime[course.startSection][0], section2StartTime[course.startSection][1]],
           end: [date.year(), date.month() + 1, date.date(), section2EndTime[course.endSection][0], section2EndTime[course.endSection][1]],
           location: course.address,
-          description: `授课教师：${course.teacher}\n本日程由 zju-grs-ics 生成\n问题反馈：https://github.com/upupming/zju-grs-ics/issues`
+          description: `授课教师：${course.teacher}\n第 ${i} 周，第${course.startSection}到${course.endSection}节\n课程季节：${course.season}\n课程周期：${course.weeksRange}${course.remarks ? `\n${course.remarks}` : ''}\n本日程由 zju-grs-ics 生成\n问题反馈：https://github.com/upupming/zju-grs-ics/issues`
         }
         events.push(event)
       }
