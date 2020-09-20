@@ -30,7 +30,7 @@ const getCourses = async (courseUrl: string): Promise<IGrsCourseInfo[]> => {
 
   const $ = cheerio.load(html)
 
-  const cheerioELe2Course = (idx: number, ele: CheerioElement): void => {
+  const cheerioELe2Course = (chooseStatus: string) => (idx: number, ele: CheerioElement): void => {
     const tmpCourses = []
     let remarks = ''
 
@@ -68,7 +68,8 @@ const getCourses = async (courseUrl: string): Promise<IGrsCourseInfo[]> => {
         teacher: tr.children[7].children[0].data!,
         address: courseInfoTd.children[i + 8].data!,
         weekDay: zh2number[courseInfoTd.children[i + 3].data!.slice(2) as ZhNumber],
-        remarks
+        remarks,
+        chooseStatus
       }
 
       tmpCourses.push(grsCourseInfo)
@@ -79,12 +80,14 @@ const getCourses = async (courseUrl: string): Promise<IGrsCourseInfo[]> => {
     }))))
   }
 
-  // 已经选上课的
-  $('table.table-bordered-xk > tbody > tr > td[name="正在修读"]').map(cheerioELe2Course)
-  // 待处理，即等待院系审批
-  $('table.table-bordered-xk > tbody > tr > td[name="待处理"]').map(cheerioELe2Course)
-  // 还在等待列表的
-  $('table.table-bordered-xk > tbody > tr > td[name="等待列表"]').map(cheerioELe2Course)
+  [
+    // 已经选上课的
+    '正在修读',
+    // 待处理，即等待院系审批
+    '待处理',
+    // 还在等待列表的
+    '等待列表'
+  ].map(chooseStatus => ($(`table.table-bordered-xk > tbody > tr > td[name="${chooseStatus}"]`).map(cheerioELe2Course(chooseStatus))))
 
   return courses
 }

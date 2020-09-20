@@ -88,7 +88,8 @@ export const course2Events = (courses: IGrsCourseInfo[], seasonId: 'fall' | 'win
           start: [date.year(), date.month() + 1, date.date(), section2StartTime[course.startSection][0], section2StartTime[course.startSection][1]],
           end: [date.year(), date.month() + 1, date.date(), section2EndTime[course.endSection][0], section2EndTime[course.endSection][1]],
           location: course.address,
-          description: `授课教师：${course.teacher}\n第 ${i} 周，第${course.startSection}到${course.endSection}节\n课程季节：${course.season}\n课程周期：${course.weeksRange}${course.remarks ? `\n${course.remarks}` : ''}\n本日程由 zju-grs-ics 生成\n问题反馈：https://github.com/upupming/zju-grs-ics/issues`
+          description: `授课教师：${course.teacher}\n第 ${i} 周，第 ${course.startSection} 到 ${course.endSection} 节\n课程季节：${course.season}\n课程周期：${course.weeksRange}${course.remarks ? `\n${course.remarks}` : ''}\n选课状态：${course.chooseStatus}\n本日程由 zju-grs-ics 生成\n问题反馈：https://github.com/upupming/zju-grs-ics/issues`,
+          url: 'https://github.com/upupming/zju-grs-ics/issues'
         }
         events.push(event)
       }

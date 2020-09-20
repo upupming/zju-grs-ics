@@ -43,4 +43,6 @@ export interface IGrsCourseInfo {
   address: string
   /** 备注 */
   remarks: string
+  /** 选课状态 */
+  chooseStatus: string
 }
