@@ -13,10 +13,20 @@ module.exports = {
         format: ['PascalCase'],
         custom: {
           regex: '^I[A-Z]',
-          match: true
+          match: false
         }
       }
     ],
-    '@typescript-eslint/prefer-nullish-coalescing': 0
-  }
+    '@typescript-eslint/prefer-nullish-coalescing': 0,
+    '@typescript-eslint/explicit-function-return-type': 0
+  },
+  overrides: [
+    // js 特定规则
+    {
+      files: ['**/**.js'],
+      rules: {
+        '@typescript-eslint/naming-convention': 0
+      }
+    }
+  ]
 }

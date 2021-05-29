@@ -13,5 +13,6 @@
     "javascriptreact",
     "typescript",
     "typescriptreact"
-  ]
+  ],
+  "files.autoSave": "off"
 }

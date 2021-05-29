@@ -3,3 +3,5 @@ yarn-error.log
 output
 .DS_Store
 template
+dist
+data
