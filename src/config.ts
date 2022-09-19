@@ -4,12 +4,12 @@ export const config: IConfig = {
   // 记得改为自己的 cookie
   cookie: '',
   fall: {
-    firstWeekOfYear: 38,
-    lastWeekDay: '2020-11-29'
+    firstWeekOfYear: 37,
+    lastWeekDay: '2022-11-06'
   },
   winter: {
-    firstWeekOfYear: 49,
-    lastWeekDay: '2021-01-28'
+    firstWeekOfYear: 48,
+    lastWeekDay: '2023-01-15'
   },
-  year: 2020
+  year: 2022
 }

@@ -54,8 +54,9 @@ yarn generate
 ## 相关资源
 
 1. [浙江大学2020-2021学年秋冬学期校历](http://www.cst.zju.edu.cn/_upload/article/files/d0/3e/5f26bbae4e1cb3bafdb72161901f/eaef074d-ecc6-4380-8da8-8c120a812072.pdf)
-2. [GCalToolkit - 用于 Google 日历的批量操作工具](https://www.gcaltoolkit.com/)
-3. [ICSviewer](https://marc.vos.net/downloads/icsviewer/)
+2. [浙江大学2022-2023学年秋冬学期校历](http://www.cst.zju.edu.cn/_upload/article/files/1a/e2/6b5554d740158b640460b14b6b20/d406d14b-6f9b-4cb0-9bd7-e02a84a1761b.pdf)
+3. [GCalToolkit - 用于 Google 日历的批量操作工具](https://www.gcaltoolkit.com/)
+4. [ICSviewer](https://marc.vos.net/downloads/icsviewer/)
 
 ### 查看我的课表
 
